@@ -1,0 +1,10 @@
+{
+  "name": "demo_0318",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "dependencies": {},
+  "devDependencies": {
+    "jquery": "2.2.3"
+  }
+}

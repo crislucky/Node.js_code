@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>三级联动菜单</title>
+</head>
+<body>
+    <script src="./js/jquery-1.12.4.js"></script>
+    <select id="province">
+        <option value="">请选择省份</option>
+    </select>&nbsp;省&nbsp;
+    <select id="city">
+        <option value="">请选择市</option>
+    </select>&nbsp;市&nbsp;
+    <select id="county">
+        <option value="">请选择区/县</option>
+    </select>&nbsp;区/县&nbsp;
+    <script>
+        $(function() {
+            //获取页面中所有DOM节点
+            let $province = $('#province');
+            let $city = $('#city');
+            let $county = $('#county');
+            //发送请求获取所有省份信息
+            $.get('http://localhost:3000/getAllProvince', (result) => {
+                let {state, data} = result;
+                let html = '';
+                if (state === 1) {
+                    console.log(data);
+                    //对所有省份进行遍历，然后追加到省份选择框中
+                    data.forEach((item) => {
+                        html += `<option value="${item.province}">${item.name}</option>`;
+                    });
+                    $province.append(html)
+                } else {
+                    alert(result.err);
+                }
+            });
+
+
+            //获取某省份下所有市信息，
+            // 只有知道是哪个省，通过省份编码，
+            // 可以从数据库中找到该省对应那些市才能知道市
+            $province.change(function () {
+                //清空城市和区县选择框
+                $city.html('<option value="">请选择市</option>');
+                $county.html('<option value="">请选择区/县</option>');
+                //获取某省的省份编码
+                let province = this.value;   //也可这样写let province = $province.val();
+                //判断选择的是否是"请选泽省份"，如果不是就return出去
+                if (!province) {
+                    return
+                }
+                // alert(province);
+                //发送请求获取该省下所有市信息
+                $.get('http://localhost:3000/getAllCitiesByProvince', {province}, (result) => {
+                    let {state, data} = result;
+                    let html = '';
+                    if (state === 1) {
+                        console.log(data);
+                        data.forEach(function (item) {
+                            html += `<option value="${item.city}">${item.name}</option>`
+                        })
+                    }
+                    $city.append(html);
+                })
+
+            })
+
+
+            //获取某省份某市下的所有区/县信息，
+            // 只有知道是哪个省哪个市，通过省份编码，城市编码
+            // 可以从数据库中找到该省该市找到对应的区县
+            $city.change(function () {
+                //清空区县选择框
+                $county.html('<option value="">请选择区/县</option>');
+                //获取某省某市编码
+                let province = $province.val();
+                let city = this.value;//也可以这样写let city = $city.val()
+                // let city = $city.val()
+                //判断选择的是否是"请选泽城市"，如果不是就return出去
+                if (!province || !city) {
+                    return
+                }
+                //发送请求获取某省份某市下的所有区/县
+                $.get('http://localhost:3000/getAllCountiesByProvinceAndCity', {province, city}, (result) => {
+                    let {state, data} = result;
+                    let html = '';
+                    if (state === 1) {
+                        console.log(data);
+                        data.forEach(function (item) {
+                            html += `<option value="${item.code}">${item.name}</option>`
+                        })
+                    }
+                    $county.append(html);
+                })
+
+            })
+
+            //区县发生改变时，弹出对应区县的编码
+            $county.change(function(){
+                // alert(this.value);
+                alert($county.val());
+            })
+        })
+    </script>
+</body>
+</html>

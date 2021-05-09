@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <button id="btn">原生js发送ajax_post请求</button>
+    <div id="demo"></div>
+    <script>
+        /*
+        * 1.实例化一个XMLHttpRequest对象
+        * 2.给上一步实例化出来的对象绑定一个事件监听，事件名：onreadystatechange
+        * 3.指定发送请求的：方式、地址、携带的参数
+        * 4.发送请求
+        * */
+
+        let btn = document.getElementById('btn');
+        let demo = document.getElementById('demo');
+
+        btn.onclick = function(){
+            //1.实例化一个XMLHttpRequest对象
+            let xhr = new XMLHttpRequest();
+            //2.给上一步实例化出来的对象绑定一个事件监听，事件名：onreadystatechange
+            xhr.onreadystatechange = function(){
+                if(xhr.readyState === 4 && xhr.status === 200){
+                    demo.innerHTML = xhr.response;
+                    console.log(xhr.response);
+                }
+            }
+            //3.指定发送请求的：方式、地址、携带的参数
+            xhr.open('POST','http://localhost:3000/testPOST');
+            //post请求所特有的请求头
+            xhr.setRequestHeader('content-type','application/x-www-form-urlencoded')
+            //4.发送请求
+            xhr.send('name=wade&age=18');
+
+        }
+    </script>
+</body>
+</html>

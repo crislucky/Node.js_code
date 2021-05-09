@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <script src="./js/jquery-1.12.4.js"></script>
+    <button id="btn1">点击获取数据</button>
+    <!--<script src="./js/demo.js"></script>-->
+
+    <script type="text/javascript">
+       let btn1 = document.getElementById('btn1');
+
+       //jsonp解决原生ajax发送请求的跨区域问题
+       btn1.onclick = function(){
+           let scriptNode = document.createElement('script');
+           scriptNode.src = "http://localhost:3000/testGET?callback=getData";
+           window.getData = function(a){
+               console.log(a);
+           }
+           document.body.appendChild(scriptNode);
+       }
+
+       //jsonp解决jquery发送ajax请求的跨区域问题
+        btn1.onclick = function(){
+            //标准写法
+            /*$.ajax('http:localhost:3000/testGET',{
+                method:'GET',
+                dataType:'jsonp',
+                data:{
+                    name:'kobe',
+                    age:18,
+                    // callback:'12345678890876543'//其实jquery偷偷的传了一个callback:值为随机生成的不会产生重复的一串数字
+                },
+                success:function(data){
+                    console.log(data);
+                },
+                error:function(err){
+                    console.log(err);
+                }
+            })*/
+
+            //精简写法
+            $.getJSON('http:localhost:3000/testPOST?callback=?',{name:'kobe',age:18},(data)=>{
+                console.log(data);
+            })
+        }
+
+    </script>
+</body>
+</html>
